@@ -19,8 +19,12 @@ export class AuthController {
       next(error);
     }
   };
-  
-  registerOrganizer = async (req: Request, res: Response, next: NextFunction) => {
+
+  registerOrganizer = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const result = await this.authService.registerOrganizer(req.body);
       res.status(200).send(result);
@@ -28,6 +32,4 @@ export class AuthController {
       next(error);
     }
   };
-  
-  
 }

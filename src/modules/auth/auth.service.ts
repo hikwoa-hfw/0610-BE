@@ -11,9 +11,11 @@ import { JWT_SECRET_KEY } from "../../config";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
+
 @injectable()
 export class AuthService {
   private prisma: PrismaService;
+
   private passwordService: PasswordService;
   private tokenService: TokenService;
 
