@@ -3,6 +3,8 @@ import { injectable } from "tsyringe";
 import { AuthController } from "./auth.controller";
 import { RegisterOrganizerDTO, RegisterUserDTO } from "./dto/register.dto";
 import { validateBody } from "../../middlewares/validation.middleware";
+import { loginDTO } from "./dto/login.dto";
+import { forgotPasswordDTO } from "./dto/forgot-password.dto";
 
 
 @injectable()
@@ -26,11 +28,16 @@ export class AuthRouter {
       validateBody(RegisterOrganizerDTO),
       this.authController.registerOrganizer
     );
-    // this.router.post(
-    //   "/login",
-    //   validateBody(loginDTO),
-    //   this.authController.login
-    // );
+    this.router.post(
+      "/login",
+      validateBody(loginDTO),
+      this.authController.login
+    );
+    this.router.post(
+      "/forgot-password",
+      validateBody(forgotPasswordDTO),
+      this.authController.forgotPassword
+    );
     
   };
 

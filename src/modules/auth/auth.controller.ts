@@ -32,4 +32,30 @@ export class AuthController {
       next(error);
     }
   };
+  
+  login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const result = await this.authService.login(req.body);
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  forgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const result = await this.authService.forgotPassword(req.body);
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
