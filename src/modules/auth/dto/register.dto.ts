@@ -51,12 +51,15 @@ export class RegisterOrganizerDTO {
   @IsString()
   readonly profilePict!: string
 
+  @IsNotEmpty()
   @IsNumber()
   readonly bankAccount!:number
 
+  @IsNotEmpty()
   @IsString()
   readonly bankName!:string
   
+  @IsNotEmpty()
   @IsNumber()
   readonly phoneNumber!:number
 }
