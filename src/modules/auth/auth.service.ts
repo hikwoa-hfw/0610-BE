@@ -5,15 +5,18 @@ import { nanoid } from "nanoid";
 import dayjs from "dayjs";
 import { hashPassword } from "../../lib/argon";
 import { RegisterOrganizerDTO, RegisterUserDTO } from "./dto/register.dto";
+
 import { body } from "express-validator";
 import { loginDTO } from "./dto/login.dto";
 import { JWT_SECRET_KEY } from "../../config";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
+
 @injectable()
 export class AuthService {
   private prisma: PrismaService;
+
   private passwordService: PasswordService;
   private tokenService: TokenService;
 
@@ -25,6 +28,7 @@ export class AuthService {
     this.prisma = PrismaClient;
     this.passwordService = PasswordService;
     this.tokenService = TokenService;
+
   }
 
   registerUser = async (body: RegisterUserDTO) => {
@@ -117,6 +121,7 @@ export class AuthService {
   };
 
   registerOrganizer = async (body: RegisterOrganizerDTO) => {
+
     const existingEmail = await this.prisma.user.findFirst({
       where: { email: body.email },
     });
@@ -171,4 +176,5 @@ export class AuthService {
       user: userWithoutPassword,
     };
   };
+
 }
