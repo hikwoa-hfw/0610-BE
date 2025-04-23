@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -18,16 +19,19 @@ model Sample {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  password     String
-  userPict     String?
-  role         Role      @default(USER)
-  fullName     String
-  referralCode String?
-  deletedAt    DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  profilePict   String?
+  role          Role      @default(USER)
+  bankAccount   Int?
+  bankName      String?
+  phoneNumber   Int?
+  fullName      String
+  referralCode  String?   @unique
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   events       Event[]
   points       Point[]
@@ -35,36 +39,19 @@ model User {
   referrals    ReferralHistory[] @relation("Referrer")
   referredBy   ReferralHistory[] @relation("ReferredUser")
   transactions Transaction[]
-  organizers   Organizer[]
   reviews      Review[]
 
   @@map("users")
 }
 
 enum Role {
+  ADMIN
   ORGANIZER
   USER
 }
 
-model Organizer {
-  id            Int       @id @default(autoincrement())
-  name          String
-  bankAccount   Int
-  bankName      String
-  organizerPict String?
-  phoneNumber   Int
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  userId        Int
-  user          User      @relation(fields: [userId], references: [id])
-  vouchers      Voucher[]
-
-  @@map("organizers")
-}
-
 model Point {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   amount     Int
@@ -76,7 +63,7 @@ model Point {
 }
 
 model Coupon {
-  id         String    @id @default(cuid())
+  id         String    @id @default(uuid())
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   amount     Int
@@ -101,16 +88,14 @@ model ReferralHistory {
 }
 
 model Voucher {
-  id          Int       @id @default(autoincrement())
-  code        String
-  claimed     Int
-  quota       Int
-  amount      Int
-  validUntil  Int
-  organizerId Int
-  organizers  Organizer @relation(fields: [organizerId], references: [id])
-  eventId     Int
-  events      Event     @relation(fields: [eventId], references: [id])
+  id         Int    @id @default(autoincrement())
+  code       String @unique
+  claimed    Int
+  quota      Int
+  amount     Int
+  validUntil Int
+  eventId    Int
+  events     Event  @relation(fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -181,6 +166,7 @@ model Transaction {
   pointAmount         Int
   voucherAmount       Int
   couponAmount        Int
+  totalPrice          Int
   userId              Int
   users               User                @relation(fields: [userId], references: [id])
   eventId             Int
