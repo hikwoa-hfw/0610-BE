@@ -1,22 +1,26 @@
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { injectable } from "tsyringe";
-import { BASE_URL_FE, JWT_SECRET_KEY, JWT_SECRET_KEY_FORGOT_PASSWORD } from "../../config";
+import {
+  BASE_URL_FE,
+  JWT_SECRET_KEY,
+  JWT_SECRET_KEY_FORGOT_PASSWORD,
+} from "../../config";
 import { hashPassword } from "../../lib/argon";
 import { ApiError } from "../../utils/api-error";
+import { MailService } from "../mail/mail.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { forgotPasswordDTO } from "./dto/forgot-password.dto";
 import { loginDTO } from "./dto/login.dto";
 import { RegisterOrganizerDTO, RegisterUserDTO } from "./dto/register.dto";
+import { ResetPasswordDTO } from "./dto/reset-password.dto";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
-import { MailService } from "../mail/mail.service";
-
 
 @injectable()
 export class AuthService {
   private prisma: PrismaService;
-  private mailService: MailService
+  private mailService: MailService;
   private passwordService: PasswordService;
   private tokenService: TokenService;
 
@@ -27,7 +31,7 @@ export class AuthService {
     TokenService: TokenService
   ) {
     this.prisma = PrismaClient;
-    this.mailService = MailService
+    this.mailService = MailService;
     this.passwordService = PasswordService;
     this.tokenService = TokenService;
   }
@@ -203,6 +207,27 @@ export class AuthService {
       { fullName: user.fullName, resetLink: link, expiryTime: 1 }
     );
 
-    return {message: "Send email success"}
+    return { message: "Send email success" };
+  };
+
+  resetPassword = async (body: ResetPasswordDTO, authUserId: number) => {
+    const user = await this.prisma.user.findFirst({
+      where: { id: authUserId },
+    });
+
+    if (!user) {
+      throw new ApiError("Invalid credentials", 400);
+    }
+
+    const hashedPassword = await this.passwordService.hashPassword(
+      body.password
+    );
+
+    await this.prisma.user.update({
+      where: { id: authUserId },
+      data: { password: hashedPassword },
+    });
+
+    return { message: "Reset password success" };
   };
 }
