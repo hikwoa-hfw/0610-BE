@@ -51,7 +51,6 @@ export class RegisterOrganizerDTO {
   @IsString()
   readonly profilePict!: string
 
-
   @IsNotEmpty()
   @IsNumber()
   readonly bankAccount!:number
@@ -61,7 +60,6 @@ export class RegisterOrganizerDTO {
   readonly bankName!:string
   
   @IsNotEmpty()
-
   @IsNumber()
   readonly phoneNumber!:number
 }

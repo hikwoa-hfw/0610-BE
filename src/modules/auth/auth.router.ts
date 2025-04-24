@@ -3,15 +3,22 @@ import { injectable } from "tsyringe";
 import { AuthController } from "./auth.controller";
 import { RegisterOrganizerDTO, RegisterUserDTO } from "./dto/register.dto";
 import { validateBody } from "../../middlewares/validation.middleware";
+import { loginDTO } from "./dto/login.dto";
+import { forgotPasswordDTO } from "./dto/forgot-password.dto";
+import { JwtMiddleware } from "../../middlewares/jwt.middleware";
+import { JWT_SECRET_KEY_FORGOT_PASSWORD } from "../../config";
+import { ResetPasswordDTO } from "./dto/reset-password.dto";
 
 
 @injectable()
 export class AuthRouter {
   private router: Router;
   private authController: AuthController;
-  constructor(AuthController: AuthController) {
+  private jwtMiddleware: JwtMiddleware
+  constructor(AuthController: AuthController, JwtMiddleware: JwtMiddleware) {
     this.router = Router();
     this.authController = AuthController;
+    this.jwtMiddleware = JwtMiddleware
     this.intializeRoutes();
   }
 
@@ -26,11 +33,22 @@ export class AuthRouter {
       validateBody(RegisterOrganizerDTO),
       this.authController.registerOrganizer
     );
-    // this.router.post(
-    //   "/login",
-    //   validateBody(loginDTO),
-    //   this.authController.login
-    // );
+    this.router.post(
+      "/login",
+      validateBody(loginDTO),
+      this.authController.login
+    );
+    this.router.post(
+      "/forgot-password",
+      validateBody(forgotPasswordDTO),
+      this.authController.forgotPassword
+    );
+    this.router.patch(
+      "/reset-password",
+      validateBody(ResetPasswordDTO),
+      this.jwtMiddleware.verifyToken(JWT_SECRET_KEY_FORGOT_PASSWORD!),
+      this.authController.resetPassword
+    );
     
   };
 
