@@ -25,9 +25,9 @@ model User {
   password     String
   profilePict  String?
   role         Role      @default(USER)
-  bankAccount  Int?
+  bankAccount  String?
   bankName     String?
-  phoneNumber  Int?
+  phoneNumber  String?
   fullName     String
   referralCode String?   @unique
   deletedAt    DateTime?
