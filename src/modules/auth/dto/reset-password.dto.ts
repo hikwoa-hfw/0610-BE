@@ -6,8 +6,8 @@ export class ResetPasswordDTO {
     minLength: 6,
     minSymbols: 0,
     minLowercase: 0,
-    minNumbers: 0,
-    minUppercase: 0,
+    minNumbers: 1,
+    minUppercase: 1,
   })
   readonly password!: string;
 }
