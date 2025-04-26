@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Express, json } from "express";
 import "reflect-metadata";
+import "./jobs"
 import { container } from "tsyringe";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { AuthRouter } from "./modules/auth/auth.router";
