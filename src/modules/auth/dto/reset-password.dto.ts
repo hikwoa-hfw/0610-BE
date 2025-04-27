@@ -11,3 +11,4 @@ export class ResetPasswordDTO {
   })
   readonly password!: string;
 }
+

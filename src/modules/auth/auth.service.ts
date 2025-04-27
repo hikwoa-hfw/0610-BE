@@ -1,6 +1,6 @@
+import { injectable } from "tsyringe";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import { injectable } from "tsyringe";
 import {
   BASE_URL_FE,
   JWT_SECRET_KEY,
@@ -8,6 +8,7 @@ import {
 } from "../../config";
 import { hashPassword } from "../../lib/argon";
 import { ApiError } from "../../utils/api-error";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { MailService } from "../mail/mail.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { forgotPasswordDTO } from "./dto/forgot-password.dto";
@@ -23,17 +24,20 @@ export class AuthService {
   private mailService: MailService;
   private passwordService: PasswordService;
   private tokenService: TokenService;
+  private cloudinaryService: CloudinaryService;
 
   constructor(
     PrismaClient: PrismaService,
     MailService: MailService,
     PasswordService: PasswordService,
-    TokenService: TokenService
+    TokenService: TokenService,
+    CloudinaryService: CloudinaryService
   ) {
     this.prisma = PrismaClient;
     this.mailService = MailService;
     this.passwordService = PasswordService;
     this.tokenService = TokenService;
+    this.cloudinaryService = CloudinaryService;
   }
 
   registerUser = async (body: RegisterUserDTO) => {
@@ -125,7 +129,10 @@ export class AuthService {
     return result;
   };
 
-  registerOrganizer = async (body: RegisterOrganizerDTO) => {
+  registerOrganizer = async (
+    body: RegisterOrganizerDTO,
+    profilePict: Express.Multer.File
+  ) => {
     const existingEmail = await this.prisma.user.findFirst({
       where: { email: body.email },
     });
@@ -135,11 +142,14 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(body.password);
+    
+    const { secure_url } = await this.cloudinaryService.upload(profilePict);
 
     const newUser = await this.prisma.user.create({
       data: {
         ...body,
         role: "ORGANIZER",
+        profilePict: secure_url,
         password: hashedPassword,
       },
     });
