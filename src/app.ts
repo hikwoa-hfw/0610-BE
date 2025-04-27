@@ -1,12 +1,13 @@
 import cors from "cors";
 import express, { Express, json } from "express";
-import "./jobs"
 import "reflect-metadata";
 import { container } from "tsyringe";
+import { PORT } from "./config";
+import "./jobs";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { AuthRouter } from "./modules/auth/auth.router";
 import { SampleRouter } from "./modules/sample/sample.router";
-import { PORT } from "./config";
+import { UserRouter } from "./modules/user/user.router";
 
 export class App {
   public app: Express;
@@ -26,9 +27,11 @@ export class App {
   private routes() {
     const authRouter = container.resolve(AuthRouter)
     const sampleRouter = container.resolve(SampleRouter)
+    const userRouter = container.resolve(UserRouter)
 
     this.app.use("/auth", authRouter.getRouter())
     this.app.use("/samples", sampleRouter.getRouter())
+    this.app.use("/users",userRouter.getRouter())
   }
 
   private handleError() {

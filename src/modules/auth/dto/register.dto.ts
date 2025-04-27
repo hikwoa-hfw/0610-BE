@@ -50,20 +50,19 @@ export class RegisterOrganizerDTO {
   })
   readonly password!: string;
 
+  @IsNotEmpty()
   @IsString()
-  readonly profilePict!: string
+  readonly bankAccount!: string;
 
   @IsNotEmpty()
   @IsString()
-  readonly bankAccount!:string
+  readonly bankName!: string;
 
   @IsNotEmpty()
   @IsString()
-  readonly bankName!:string
-  
-  @IsNotEmpty()
-  @IsString()
-  readonly phoneNumber!:string
+  readonly phoneNumber!: string;
+
+  // @IsNotEmpty()
+  // @IsString()
+  // readonly profilePict!: string;
 }
-
-
