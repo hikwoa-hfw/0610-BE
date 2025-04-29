@@ -13,7 +13,25 @@ export class EventController {
   createEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.eventService.createEvent(req.body);
-      res.status(200).send(result);
+      res.status(201).json(result); // Use 201 for resource creation
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getEvents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.eventService.getEvents();
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getEventBySlug = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.eventService.getEventBySlug(req.params.slug);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }

@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 import { PrismaService } from "../prisma/prisma.service";
 import { ApiError } from "../../utils/api-error";
-import { createEventDTO } from "./dto/event.create.dto";
+import { GetEventBySlugDTO } from "./dto/get.event.by.slug.dto";
 
 @injectable()
 export class EventService {
@@ -11,7 +11,7 @@ export class EventService {
     this.prisma = PrismaClient;
   }
 
-  createEvent = async (body: createEventDTO) => {
+  createEvent = async (body: any) => {
     const { name } = body;
 
     const event = await this.prisma.event.findFirst({
@@ -21,10 +21,22 @@ export class EventService {
     if (event) {
       throw new ApiError("Event already created", 400);
     }
+  };
 
-    const newEvent = await this.prisma.event.create({
-      data: { ...body },
+  getEvents = async () => {
+    const events = await this.prisma.event.findMany();
+    return events;
+  };
+
+  getEventBySlug = async (slug: string) => {
+    const eventBySlug = await this.prisma.event.findFirst({
+      where: { slug, deletedAt: null },
     });
-    return newEvent;
+
+    if (!eventBySlug) {
+      throw new ApiError("Event tidak ditemukan", 404);
+    }
+
+    return eventBySlug;
   };
 }
