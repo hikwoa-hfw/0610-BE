@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsStrongPassword,
 } from "class-validator";
@@ -25,6 +26,7 @@ export class RegisterUserDTO {
   })
   readonly password!: string;
 
+  @IsOptional()
   @IsString()
   referralCodeUsed?: string;
 }
@@ -48,22 +50,19 @@ export class RegisterOrganizerDTO {
   })
   readonly password!: string;
 
-  @IsString()
-  readonly profilePict!: string
-
-
   @IsNotEmpty()
-  @IsNumber()
-  readonly bankAccount!:number
+  @IsString()
+  readonly bankAccount!: string;
 
   @IsNotEmpty()
   @IsString()
-  readonly bankName!:string
-  
-  @IsNotEmpty()
+  readonly bankName!: string;
 
-  @IsNumber()
-  readonly phoneNumber!:number
+  @IsNotEmpty()
+  @IsString()
+  readonly phoneNumber!: string;
+
+  // @IsNotEmpty()
+  // @IsString()
+  // readonly profilePict!: string;
 }
-
-

@@ -1,18 +1,9 @@
-import express from "express";
-import { errorMiddleware } from "./middlewares/error.middleware";
-import authRouter from "./routes/auth.router";
-import sampleRouter from "./routes/sample.router";
-import cors from "cors";
+import { App } from "./app";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const main = () => {
+  const app = new App();
 
-app.use("/auth", authRouter);
-app.use("/samples", sampleRouter);
+  app.start();
+};
 
-app.use(errorMiddleware);
-
-app.listen(8000, () => {
-  console.log(`Server running on PORT :${8000}`);
-});
+main();
