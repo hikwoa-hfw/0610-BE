@@ -60,8 +60,8 @@ export class AuthRouter {
     );
     this.router.patch(
       "/reset-password",
-      validateBody(ResetPasswordDTO),
       this.jwtMiddleware.verifyToken(JWT_SECRET_KEY_FORGOT_PASSWORD!),
+      validateBody(ResetPasswordDTO),
       this.authController.resetPassword
     );
   };
