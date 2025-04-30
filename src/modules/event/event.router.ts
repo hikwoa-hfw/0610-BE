@@ -3,6 +3,7 @@ import { injectable } from "tsyringe";
 import { validateBody } from "../../middlewares/validation.middleware";
 import { createEventDTO } from "./dto/event.create.dto";
 import { EventController } from "./event.controller";
+import { create } from "domain";
 
 @injectable()
 export class EventRouter {
@@ -16,6 +17,8 @@ export class EventRouter {
   }
 
   private initializeRoutes = () => {
+    this.router.get("/", this.eventController.getEvents);
+    this.router.get("/:slug", this.eventController.getEventBySlug);
     this.router.post(
       "/events",
       validateBody(createEventDTO),
