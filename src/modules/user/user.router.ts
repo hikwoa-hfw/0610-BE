@@ -33,8 +33,8 @@ export class UserRouter {
     );
     this.router.patch(
       "/update-user",
-      validateBody(UpdateUserDTO),
       this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
+      validateBody(UpdateUserDTO),
       this.userController.updateUser
     );
     this.router.patch(
