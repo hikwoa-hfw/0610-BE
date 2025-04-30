@@ -22,7 +22,7 @@ export class EventController {
   getEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.eventService.getEvents();
-      res.status(200).json(result);
+      res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -31,7 +31,7 @@ export class EventController {
   getEventBySlug = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.eventService.getEventBySlug(req.params.slug);
-      res.status(200).json(result);
+      res.status(200).send(result);
     } catch (error) {
       next(error);
     }

@@ -2,12 +2,16 @@ import { injectable } from "tsyringe";
 import { PrismaService } from "../prisma/prisma.service";
 import { ApiError } from "../../utils/api-error";
 import { GetEventBySlugDTO } from "./dto/get.event.by.slug.dto";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @injectable()
 export class EventService {
   private prisma: PrismaService;
 
-  constructor(PrismaClient: PrismaService) {
+  constructor(
+    PrismaClient: PrismaService,
+    cloudinaryService: CloudinaryService
+  ) {
     this.prisma = PrismaClient;
   }
 
@@ -24,8 +28,10 @@ export class EventService {
   };
 
   getEvents = async () => {
-    const events = await this.prisma.event.findMany();
-    return events;
+    const events = await this.prisma.event.findMany({
+      where: { deletedAt: null },
+    });
+    return { events: events };
   };
 
   getEventBySlug = async (slug: string) => {
@@ -37,6 +43,6 @@ export class EventService {
       throw new ApiError("Event tidak ditemukan", 404);
     }
 
-    return eventBySlug;
+    return { event: eventBySlug };
   };
 }
