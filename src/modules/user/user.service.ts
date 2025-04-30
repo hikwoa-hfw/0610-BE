@@ -21,15 +21,16 @@ export class UserService {
     this.cloudinaryService = CloudinaryService;
   }
 
-  getSamples = async () => {
-    const samples = await this.prisma.sample.findMany();
-    return samples;
-  };
+  getUser = async (authUserId: number) => {
+    const user = await this.prisma.user.findFirst({
+      where: { id: authUserId },
+    });
 
-  getSample = async (id: number) => {
-    const sample = await this.findUserOrThrow(id);
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
 
-    return sample;
+    return user;
   };
 
   updateOrganizer = async (

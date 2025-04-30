@@ -13,7 +13,9 @@ export class UserController {
 
   getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await this.userService.getSamples();
+      const result = await this.userService.getUser(
+        res.locals.user.id
+      );
       res.status(200).send(result);
     } catch (error) {
       next(error);

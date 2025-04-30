@@ -186,9 +186,8 @@ export class AuthService {
 
     const { password: gg, ...userWithoutPassword } = user;
     return {
-      message: "lojin sukses",
       accessToken,
-      user: userWithoutPassword,
+      ...userWithoutPassword,
     };
   };
 

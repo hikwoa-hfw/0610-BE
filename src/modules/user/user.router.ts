@@ -26,7 +26,11 @@ export class UserRouter {
   }
 
   private intializeRoutes = () => {
-    this.router.get("/", this.userController.getUser);
+    this.router.get(
+      "/",
+      this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
+      this.userController.getUser
+    );
     this.router.patch(
       "/update-user",
       validateBody(UpdateUserDTO),
