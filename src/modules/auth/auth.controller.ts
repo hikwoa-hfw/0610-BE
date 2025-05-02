@@ -61,7 +61,7 @@ export class AuthController {
     try {
       const result = await this.authService.resetPassword(
         req.body,
-        res.locals.user.id
+        Number(res.locals.user.id)
       );
       res.status(200).send(result);
     } catch (error) {

@@ -11,11 +11,18 @@ export class UserController {
     this.userService = UserService;
   }
 
+  getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await this.userService.getUsers();
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   getUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await this.userService.getUser(
-        res.locals.user.id
-      );
+      const result = await this.userService.getUser(Number(res.locals.user.id));
       res.status(200).send(result);
     } catch (error) {
       next(error);
@@ -26,7 +33,7 @@ export class UserController {
     try {
       const result = await this.userService.updateUser(
         req.body,
-        res.locals.user.id
+        Number(res.locals.user.id)
       );
       res.status(200).send(result);
     } catch (error) {
