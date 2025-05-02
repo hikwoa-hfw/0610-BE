@@ -21,8 +21,12 @@ export class UserService {
     this.cloudinaryService = CloudinaryService;
   }
 
+  getUsers = async ( ) => {
+    return await this.prisma.user.findMany()
+  }
+
   getUser = async (authUserId: number) => {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findMany({
       where: { id: authUserId },
     });
 

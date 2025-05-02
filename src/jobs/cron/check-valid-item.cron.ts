@@ -1,6 +1,10 @@
 import { scheduleJob } from "node-schedule";
 import prisma from "../../config/prisma";
 
+// scheduleJob("cek jalan cron job", "* * * * *", async () => {
+//   console.log("Running cron job to validate expired user points...");
+// });  //TESTING CRON
+
 // point valid until
 scheduleJob("validate-expired-point", "0 0 * * *", async () => {
   console.log("Running cron job to validate expired user points...");

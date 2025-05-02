@@ -11,8 +11,8 @@ export class SampleService {
   }
 
   getSamples = async () => {
-    const samples = await this.prisma.sample.findMany();
-    return samples;
+    const tx = await this.prisma.user.findMany()
+    return tx;
   };
 
   getSample = async (id: number) => {

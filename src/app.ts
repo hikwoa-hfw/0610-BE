@@ -9,6 +9,7 @@ import { AuthRouter } from "./modules/auth/auth.router";
 import { SampleRouter } from "./modules/sample/sample.router";
 import { UserRouter } from "./modules/user/user.router";
 import { EventRouter } from "./modules/event/event.router";
+import { TransactionRouter } from "./modules/transaction/transaction.router";
 
 export class App {
   public app: Express;
@@ -30,11 +31,13 @@ export class App {
     const sampleRouter = container.resolve(SampleRouter);
     const userRouter = container.resolve(UserRouter);
     const eventRouter = container.resolve(EventRouter);
+    const transactionRouter = container.resolve(TransactionRouter);
 
     this.app.use("/auth", authRouter.getRouter());
     this.app.use("/samples", sampleRouter.getRouter());
     this.app.use("/users", userRouter.getRouter());
     this.app.use("/events", eventRouter.getRouter());
+    this.app.use("/transactions", transactionRouter.getRouter());
   }
 
   private handleError() {

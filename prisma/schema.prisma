@@ -19,7 +19,6 @@ model Sample {
 }
 
 model User {
-
   id           Int       @id @default(autoincrement())
   email        String    @unique
   password     String
@@ -33,7 +32,6 @@ model User {
   deletedAt    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-
 
   events       Event[]
   points       Point[]
@@ -58,22 +56,23 @@ model Point {
   updatedAt  DateTime @updatedAt
   amount     Int
   validUntil DateTime
-  userId     Int
+  userId     Int      @unique
   user       User     @relation(fields: [userId], references: [id])
 
   @@map("points")
 }
 
 model Coupon {
-  id         String    @id @default(uuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  amount     Int
-  usedAt     DateTime?
-  validUntil DateTime
-  code       String    @unique
-  userId     Int
-  user       User      @relation(fields: [userId], references: [id])
+  id          String        @id @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  amount      Int
+  usedAt      DateTime?
+  validUntil  DateTime
+  code        String        @unique
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+  Transaction Transaction[]
 
   @@map("coupons")
 }
@@ -90,7 +89,7 @@ model ReferralHistory {
 }
 
 model Voucher {
-  id         Int    @id @default(autoincrement())
+  id         String @id @default(uuid())
   code       String @unique
   claimed    Int
   quota      Int
@@ -99,8 +98,9 @@ model Voucher {
   eventId    Int
   events     Event  @relation(fields: [eventId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
 
   @@map("vouchers")
 }
@@ -162,13 +162,16 @@ model Ticket {
 model Transaction {
   id                  Int                 @id @default(autoincrement())
   uuid                String              @unique @default(uuid())
-  amount              Int
   status              TransactionStatus
   paymentProof        String?
   pointAmount         Int
   voucherAmount       Int
   couponAmount        Int
   totalPrice          Int
+  voucherId           String?
+  vouchers            Voucher?            @relation(fields: [voucherId], references: [id])
+  couponId            String?
+  coupons             Coupon?             @relation(fields: [couponId], references: [id])
   userId              Int
   users               User                @relation(fields: [userId], references: [id])
   eventId             Int
