@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { injectable } from "tsyringe";
 import { EventService } from "./event.service";
+import { plainToInstance } from "class-transformer";
+import { GetTransactionDTO } from "../transaction/dto/get-transaction.dto";
+import { GetEventsListByOrganizerDTO } from "./dto/get-events-list-by-organizer.dto";
 
 @injectable()
 export class EventController {
@@ -14,6 +17,23 @@ export class EventController {
     try {
       const result = await this.eventService.createEvent(req.body);
       res.status(201).json(result); // Use 201 for resource creation
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getEventsListByOrganizer = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const authUserId = (res.locals.user.id);
+      const query = plainToInstance(GetEventsListByOrganizerDTO, req.query);
+      const result = await this.eventService.getEventsListByOrganizer(
+        authUserId, query
+      );
+      res.status(200).send(result);
     } catch (error) {
       next(error);
     }

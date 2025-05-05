@@ -28,8 +28,8 @@ export class UserRouter {
   private intializeRoutes = () => {
     this.router.get(
       "/",
-      // this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
-      this.userController.getUsers
+      this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
+      this.userController.getUser
     );
     this.router.patch(
       "/update-user",
