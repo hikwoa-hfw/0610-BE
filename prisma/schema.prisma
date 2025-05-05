@@ -122,7 +122,7 @@ model Event {
   thumbnail      String
   startDate      DateTime
   endDate        DateTime
-  slug           String
+  slug           String        @unique()
   category       Category
   userId         Int
   users          User          @relation(fields: [userId], references: [id])

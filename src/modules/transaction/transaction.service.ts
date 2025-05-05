@@ -1,8 +1,8 @@
 import { injectable } from "tsyringe";
 import { ApiError } from "../../utils/api-error";
-import { PrismaService } from "../prisma/prisma.service";
 import { MailService } from "../mail/mail.service";
-import { UpdateTransactionDTO } from "./dto/update-transaction.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { GetTransactionDTO } from "./dto/get-transaction.dto";
 
 @injectable()
 export class TransactionService {
@@ -14,13 +14,129 @@ export class TransactionService {
     this.mailService = MailService;
   }
 
+  getTransactionsByOrganizer = async (
+    authUserId: number,
+    query: GetTransactionDTO
+  ) => {
+    const { page, sortBy, sortOrder, take, search } = query;
+
+    const transactions = await this.prisma.transaction.findMany({
+      where: { events: { userId: authUserId } },
+      orderBy: { [sortBy]: sortOrder },
+      skip: (page - 1) * take,
+      take,
+      include: {
+        users: { select: { fullName: true, email: true } },
+        transaction_details: {
+          select: {
+            qty: true,
+            price: true,
+            tickets: { select: { type: true } },
+          },
+        },
+      },
+    });
+
+    const count = await this.prisma.transaction.count({
+      where: { events: { userId: authUserId }, deletedAt: null },
+    });
+
+    return {
+      data: transactions,
+      meta: { page, take, total: count },
+    };
+  };
+
+  getTransactionsByEventSlug = async (
+    slug: string,
+    query: GetTransactionDTO
+  ) => {
+    console.log("tidak kena slug");
+    const { page, sortBy, sortOrder, take, search } = query;
+
+    const transactions = await this.prisma.transaction.findMany({
+      where: { events: { slug } },
+      orderBy: { [sortBy]: sortOrder },
+      skip: (page - 1) * take,
+      take,
+    });
+
+    if (!transactions) {
+      throw new ApiError("Transaction not found", 400);
+    }
+
+    const count = await this.prisma.transaction.count({
+      where: { events: { slug } },
+    });
+
+    return { data: transactions, meta: { page, take: 10, total: count } };
+  };
+
+  getTransactionsDetail = async (uuid: string) => {
+    console.log("tidak kena");
+    
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { uuid },
+      include: {
+        vouchers: { select: { code: true } },
+        transaction_details: { select: { name: true, qty: true, price: true } },
+        users: { select: { fullName: true, email: true } },
+      },
+    });
+
+    if (!transaction) {
+      throw new ApiError("Transaction not found", 400);
+    }
+
+    return transaction
+  };
+
+  getTransactionsPaid = async (
+    authUserId: number,
+    query: GetTransactionDTO
+  ) => {
+    const { page, sortBy, sortOrder, take, search } = query;
+
+    console.log("kena");
+    
+    const transactions = await this.prisma.transaction.findMany({
+      where: { events: { userId: authUserId }, status: "PAID" },
+    });
+
+    const count = await this.prisma.transaction.count({
+      where: {
+        events: { userId: authUserId },
+        deletedAt: null,
+        status: "PAID",
+      },
+    });
+
+    return {
+      data: transactions,
+      meta: { page, take, total: count },
+    };
+  };
+
+  getTotalRevenue = async (authUserId: number) => {
+    const transactions = await this.prisma.transaction.aggregate({
+      where: { events: { userId: authUserId }, status: "PAID" },
+      _sum: {
+        totalPrice: true,
+      },
+    });
+
+    console.log(transactions);
+
+    return transactions;
+  };
+
   rejectTransaction = async (authUserId: number, transactionUuid: string) => {
     try {
       const transaction = await this.prisma.transaction.findFirst({
         where: { uuid: transactionUuid, deletedAt: null },
         include: {
           transaction_details: true,
-          users: true,
+          users: { omit: { password: true } },
         },
       });
 
@@ -41,7 +157,7 @@ export class TransactionService {
                 select: {
                   id: true,
                   name: true,
-                  users: true,
+                  users: { omit: { password: true } },
                 },
               },
             },
@@ -191,13 +307,13 @@ export class TransactionService {
 
   acceptTransaction = async (authUserId: number, transactionUuid: string) => {
     try {
-      console.log(await this.prisma.transaction.findMany());
-      
+      console.log("kena");
+
       const transaction = await this.prisma.transaction.findFirst({
         where: { uuid: transactionUuid, deletedAt: null },
         include: {
           transaction_details: true,
-          users: true,
+          users: { omit: { password: true } },
         },
       });
 
@@ -218,7 +334,7 @@ export class TransactionService {
                 select: {
                   id: true,
                   name: true,
-                  users: true,
+                  users: { omit: { password: true } },
                 },
               },
             },
@@ -250,7 +366,7 @@ export class TransactionService {
         { fullName, transactionUuid, linkUrl: "http://localhost:3000/" }
       );
 
-      return {message: "Accept transaction success"}
+      return { message: "Accept transaction success" };
     } catch (error) {
       throw new ApiError("Transaction acception failed.", 400);
     }

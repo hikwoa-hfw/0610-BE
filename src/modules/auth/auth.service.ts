@@ -181,7 +181,7 @@ export class AuthService {
     const accessToken = this.tokenService.generateToken(
       { id: user.id, role: user.role },
       JWT_SECRET_KEY!,
-      { expiresIn: "1h" }
+      { expiresIn: "5h" }
     );
 
     const { password: gg, ...userWithoutPassword } = user;
