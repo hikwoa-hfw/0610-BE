@@ -74,7 +74,7 @@ export class TransactionService {
 
   getTransactionsDetail = async (uuid: string) => {
     console.log("tidak kena");
-    
+
     const transaction = await this.prisma.transaction.findUnique({
       where: { uuid },
       include: {
@@ -88,7 +88,7 @@ export class TransactionService {
       throw new ApiError("Transaction not found", 400);
     }
 
-    return transaction
+    return transaction;
   };
 
   getTransactionsPaid = async (
@@ -98,7 +98,7 @@ export class TransactionService {
     const { page, sortBy, sortOrder, take, search } = query;
 
     console.log("kena");
-    
+
     const transactions = await this.prisma.transaction.findMany({
       where: { events: { userId: authUserId }, status: "PAID" },
     });
@@ -115,6 +115,15 @@ export class TransactionService {
       data: transactions,
       meta: { page, take, total: count },
     };
+  };
+
+  getTransactionsPaidNoPage = async (authUserId: number) => {
+    const transactions = await this.prisma.transaction.findMany({
+      where: { events: { userId: authUserId }, status: "PAID" },
+      select: {uuid: true, createdAt: true, userId: true, status: true}
+    });
+
+    return transactions
   };
 
   getTotalRevenue = async (authUserId: number) => {

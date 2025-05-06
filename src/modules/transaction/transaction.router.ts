@@ -39,6 +39,13 @@ export class TransactionRouter {
       roleMiddleware,
       this.transactionController.getTransactionsPaid
     );
+    
+    this.router.get(
+      "/paidnopage",
+      authMiddleware,
+      roleMiddleware,
+      this.transactionController.getTransactionsPaidNoPage
+    );
   
     this.router.get(
       "/revenue",

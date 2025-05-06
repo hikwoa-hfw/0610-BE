@@ -81,6 +81,22 @@ export class TransactionController {
       next(error);
     }
   };
+  
+  getTransactionsPaidNoPage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const authUserId = Number(res.locals.user.id);
+      const result = await this.transactionService.getTransactionsPaidNoPage(
+        authUserId,
+      );
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   getTotalRevenue = async (req: Request, res: Response, next: NextFunction) => {
     try {

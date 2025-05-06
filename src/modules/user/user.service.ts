@@ -4,6 +4,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { UpdateOrganizerDTO, UpdateUserDTO } from "./dto/update-user.dto";
 import { PasswordService } from "../auth/password.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { GetUsersDto } from "./dto/get-users.dto";
 
 @injectable()
 export class UserService {
@@ -23,6 +24,33 @@ export class UserService {
 
   getUsers = async () => {
     return await this.prisma.user.findMany();
+  };
+
+  getUsersByEventSlug = async (slug: string, query: GetUsersDto) => {
+    const { page, sortBy, sortOrder, take } = query;
+    const users = await this.prisma.transaction.findMany({
+      where: { events: { slug }, status: "PAID" },
+      select: {
+        uuid: true,
+        id: true,
+        totalPrice: true,
+        transaction_details: { select: { qty: true } },
+        users: { select: { fullName: true } },
+        events: { select: { name: true } },
+      },
+      orderBy: { [sortBy]: sortOrder },
+      skip: (page - 1) * take,
+      take,
+    });
+
+    const count = await this.prisma.transaction.count({
+      where: { events: { slug }, status: "PAID" },
+    });
+
+    return {
+      data: users,
+      meta: { page, take: 10, total: count },
+    };
   };
 
   getUser = async (authUserId: number) => {
@@ -47,6 +75,8 @@ export class UserService {
     authUserId: number,
     profilePict: Express.Multer.File
   ) => {
+    console.log("kena update org");
+    
     const user = await this.prisma.user.findFirst({
       where: { id: authUserId },
     });
@@ -76,9 +106,12 @@ export class UserService {
     if (body.bankName) updateData.bankName = body.bankName;
     if (body.phoneNumber) updateData.phoneNumber = body.phoneNumber;
 
+    let newProfile = user.profilePict
     if (profilePict) {
       const { secure_url } = await this.cloudinaryService.upload(profilePict);
       updateData.profilePict = secure_url;
+    }else{
+      updateData.profilePict = newProfile!
     }
 
     const updatedUser = await this.prisma.user.update({
