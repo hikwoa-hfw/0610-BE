@@ -4,7 +4,7 @@ import multer from "multer";
 import { ApiError } from "../utils/api-error";
 
 export class UploaderMiddleware {
-  upload = (fileSize: number = 2) => {
+  upload = (fileSize: number = 4) => {
     const storage = multer.memoryStorage();
 
     const limits = { fileSize: fileSize * 1024 * 1024 };

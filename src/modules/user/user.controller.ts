@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { injectable } from "tsyringe";
 import { UserService } from "./user.service";
 import { ApiError } from "../../utils/api-error";
+import { GetUsersDto } from "./dto/get-users.dto";
+import { plainToInstance } from "class-transformer";
 
 @injectable()
 export class UserController {
@@ -14,6 +16,17 @@ export class UserController {
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await this.userService.getUsers();
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  getUsersByEventSlug = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {slug} = req.params
+      const query = plainToInstance(GetUsersDto, req.query);
+      const result = await this.userService.getUsersByEventSlug(slug, query);
       res.status(200).send(result);
     } catch (error) {
       next(error);
@@ -43,11 +56,12 @@ export class UserController {
 
   updateOrganizer = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      console.log(files);
+      
       const profilePict = files.profilePict?.[0];
-      if (!profilePict) {
-        throw new ApiError("Profile Picture is required", 400);
-      }
+     
       const result = await this.userService.updateOrganizer(
         req.body,
         res.locals.user.id,

@@ -31,6 +31,11 @@ export class UserRouter {
       this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
       this.userController.getUser
     );
+    this.router.get(
+      "/:slug",
+      this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
+      this.userController.getUsersByEventSlug
+    );
     this.router.patch(
       "/update-user",
       this.jwtMiddleware.verifyToken(JWT_SECRET_KEY!),
