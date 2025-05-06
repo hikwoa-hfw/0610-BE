@@ -49,7 +49,7 @@ export class UserService {
 
     return {
       data: users,
-      meta: { page, take: 10, total: count },
+      meta: { page, take, total: count },
     };
   };
 
