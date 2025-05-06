@@ -69,7 +69,7 @@ export class TransactionService {
       where: { events: { slug } },
     });
 
-    return { data: transactions, meta: { page, take: 10, total: count } };
+    return { data: transactions, meta: { page, take, total: count } };
   };
 
   getTransactionsDetail = async (uuid: string) => {
